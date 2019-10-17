@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+
+    <style>
+      * {
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        padding: 1rem;
+        height: 100vh;
+
+        display: grid;
+        align-items: center;
+        justify-items: center;
+      }
+
+      .container {
+        height: 600px;
+        width: 600px;
+
+        display: grid;
+        grid-gap: 0.5rem;
+        grid-template-columns: repeat(6, 1fr);
+        border: 5px solid black;
+      }
+
+      .button {
+        background: black;
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.301);
+        margin: 0 1rem;
+        font-family: monospace;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        transition: background 0.5s ease-out;
+        transition: transform 0.5s ease-out;
+      }
+
+      button:hover {
+        background: firebrick;
+        transform: scale(1.05);
+      }
+
+      .color {
+        width: 100px;
+        height: 50px;
+        border: 0;
+        outline: 0;
+        background-color: black;
+        box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.301);
+        cursor: pointer;
+      }
+
+      .color:hover {
+        background: firebrick;
+        transform: scale(1.05);
+      }
+
+      .controls {
+        display: flex;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="controls">
+      <button class="button reset">Reset</button>
+      <button class="button resize">Resize</button>
+      <input class="color" type="color" value="#bada55" />
+    </div>
+    <div class="container"></div>
+
+    <script>
+      const container = document.querySelector(".container");
+      let gridItems = document.querySelectorAll(".container > *");
+
+      let baseColor = "#bada55";
+
+      let isDrawing = false;
+      container.addEventListener("mousedown", e => {
+        isDrawing = true;
+      });
+
+      container.addEventListener("mouseup", e => {
+        isDrawing = false;
+      });
+
+      document
+        .querySelector(".color")
+        .addEventListener("change", e => (baseColor = e.target.value));
+
+      const applyColor = e => {
+        if (isDrawing) e.currentTarget.style.background = baseColor;
+      };
+
+      const resetColor = () => {
+        gridItems = document.querySelectorAll(".container > *");
+        gridItems.forEach(item => (item.style.background = "white"));
+      };
+
+      const insertGrid = grid => {
+        grid.forEach(element => {
+          container.appendChild(element);
+        });
+      };
+
+      const createGrid = size => {
+        grid = [];
+        for (let i = 1; i <= size; i++) {
+          const div = document.createElement("div");
+          div.classList.add(`box-${i}`);
+
+          div.addEventListener("mouseover", applyColor);
+          grid.push(div);
+        }
+
+        insertGrid(grid);
+      };
+
+      const resize = () => {
+        const size = prompt("Choose size (S, M, L): ").toLowerCase();
+
+        while (container.hasChildNodes()) {
+          container.removeChild(container.firstChild);
+        }
+        console.log(size);
+
+        switch (size) {
+          case "m":
+            container.style.gridTemplateColumns = "repeat(12, 1fr)";
+            createGrid(12 * 12);
+            break;
+          case "l":
+            container.style.gridTemplateColumns = "repeat(64, 1fr)";
+            container.style.gridGap = "0.01rem";
+            createGrid(64 * 64);
+            break;
+          default:
+            container.style.gridTemplateColumns = "repeat(6, 1fr)";
+            createGrid(6 * 6);
+        }
+      };
+
+      createGrid(6 * 6);
+
+      const resetButton = document.querySelector(".reset");
+      resetButton.addEventListener("click", resetColor);
+
+      const resizeButton = document.querySelector(".resize");
+      resizeButton.addEventListener("click", resize);
+    </script>
+  </body>
+</html>
